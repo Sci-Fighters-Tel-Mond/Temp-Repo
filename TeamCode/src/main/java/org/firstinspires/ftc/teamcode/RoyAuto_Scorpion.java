@@ -69,6 +69,7 @@ public class RoyAuto_Scorpion extends LinearOpMode {
     private int rightBackStartPos = 0;
     private int leftFrontStartPos = 0;
     private int rightFrontStartPos = 0;
+    private Toggle fieldOriented = new Toggle(false);
 
     public void initIMU() {
         // Set up the parameters with which we will use our IMU. Note that integration
@@ -133,6 +134,7 @@ public class RoyAuto_Scorpion extends LinearOpMode {
 //        }
 //        stopPower();
 //    }
+
 
 
 
@@ -396,13 +398,22 @@ public class RoyAuto_Scorpion extends LinearOpMode {
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.\
+
             double boost = gamepad1.left_trigger * 0.5 + 0.5;
             double drive = -gamepad1.left_stick_y * boost;
             double turn = gamepad1.right_stick_x * boost;
             double strafe = gamepad1.left_stick_x * boost;
 
+            double alpha = getHeading();
+            double forward = Math.cos(alpha) * drive;
+            double side = Math.sin(alpha) * strafe;
 
-            setPower(drive, turn, strafe);
+
+            if (fieldOriented.getState() == true)
+                setPower(forward, turn, side);
+            else
+                setPower(drive, turn, strafe);
+
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("StrafePos", getStrafeDistance());
@@ -417,8 +428,7 @@ public class RoyAuto_Scorpion extends LinearOpMode {
             // game Pad Actions
             // game Pad Actions
 
-            if (gamepad1.right_bumper)
-                triangle();
+
             if (gamepad1.y) {
                 driveForward(4 , 1);
             }
@@ -433,6 +443,9 @@ public class RoyAuto_Scorpion extends LinearOpMode {
             }
             if (gamepad1.left_bumper) {
                 strafeSquare();
+            }
+            if (gamepad1.right_bumper){
+                fieldOriented.toggle();
             }
 
 
