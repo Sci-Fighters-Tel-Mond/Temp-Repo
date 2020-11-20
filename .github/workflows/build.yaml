@@ -17,6 +17,9 @@ jobs:
           java-version: 11
           java-package: jdk
 
+      - name: "change permission"
+        run: "sudo chmod a+rwx ./gradlew"
+
       - name: "build"
         id: build
         continue-on-error: true
