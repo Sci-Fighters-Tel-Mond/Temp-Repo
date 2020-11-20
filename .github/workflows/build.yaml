@@ -23,8 +23,7 @@ jobs:
       - name: "build"
         id: build
         continue-on-error: true
-        # run: "sudo ./gradlew assembleDebug"
-        run: "./gradlew assemble"
+        run: "sudo ./gradlew assembleDebug"
 
       - name: "SendLog"
         env:
