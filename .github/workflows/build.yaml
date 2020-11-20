@@ -1,0 +1,28 @@
+name: "Test Build Project"
+
+on: push
+
+jobs:
+  build:
+    name: "Build Thing"
+    runs-on: ubuntu-latest # may need to switch to windows-latest
+
+    steps:
+      - name: "checkout"
+        uses: actions/checkout@v2
+
+      - name: "build"
+        id: build
+        continue-on-error: true
+        run: "./gradlew assembleDebug"
+
+      - name: "SendLog"
+        env:
+          MSG: '{
+            "title": "${{ github.event.pusher.name }} Pushed",
+            "description": "In repository: ${{ github.event.repository.html_url }}",
+            "fields": [
+              {"name": "Status", "value": "${{ steps.build.outcome }}"}
+            ]
+          }'
+        run: 'curl -H "Content-Type: application/json" -d "{\"embeds\": [$MSG]}" -X POST https://discord.com/api/webhooks/778973828125687828/GxJsOt5rkf_n7eeVri4oOwy52ivIuNaw5dnYr6CPkXzIkBnnRTnMXoV9IxC8PgcAROpv'
