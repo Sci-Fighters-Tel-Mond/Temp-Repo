@@ -17,6 +17,11 @@ jobs:
           java-version: 11
           java-package: jdk
 
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r21d
+      - runs: ndk-build NDK_PROJECT_PATH=. APP_BUILD_SCRIPT=./Android.mk NDK_APPLICATION_MK=./Application.mk
+
       - name: "change permission"
         run: "sudo chmod a+rwx ./gradlew"
 
