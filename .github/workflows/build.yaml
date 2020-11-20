@@ -5,7 +5,7 @@ on: push
 jobs:
   build:
     name: "Build Thing"
-    runs-on: ubuntu-latest # may need to switch to windows-latest
+    runs-on: windows-2019 # may need to switch to windows-latest
 
     steps:
       - name: "checkout"
@@ -15,7 +15,7 @@ jobs:
         id: build
         continue-on-error: true
         # run: "sudo ./gradlew assembleDebug"
-        run: "./gradlew build"
+        run: "gradlew build"
 
       - name: "SendLog"
         env:
