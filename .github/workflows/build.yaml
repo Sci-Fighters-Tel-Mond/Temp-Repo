@@ -7,6 +7,8 @@ jobs:
     name: "Build Thing"
     runs-on: ubuntu-latest # may need to switch to windows-latest
 
+    continue-on-error: true
+
     steps:
       - name: "checkout"
         uses: actions/checkout@v2
@@ -30,16 +32,27 @@ jobs:
 
       - name: "build"
         id: build
-        continue-on-error: true
         run: "sudo ./gradlew assembleDebug"
 
+    outputs:
+      status: "${{ steps.buid.outcome }}"
+
+  sendMessage:
+    name: "Send Message"
+    runs-on: ubuntu-18.04
+
+    needs: build
+
+    steps:
       - name: "SendLog"
         env:
+          WEBHOOK_ID: ${{ secrets.WEBHOOK_ID }}
+          WEBHOOK_TOKEN: ${{ secrets.WEBHOOK_TOKEN }}
           MSG: '{
             "title": "${{ github.event.pusher.name }} Pushed",
             "description": "In repository: ${{ github.event.repository.html_url }}",
             "fields": [
-              {"name": "Status", "value": "${{ steps.build.outcome }}"}
+              {"name": "Status", "value": "${{ needs.build.outputs.status }}"}
             ]
           }'
-        run: 'curl -H "Content-Type: application/json" -d "{\"embeds\": [$MSG]}" -X POST https://discord.com/api/webhooks/778973828125687828/GxJsOt5rkf_n7eeVri4oOwy52ivIuNaw5dnYr6CPkXzIkBnnRTnMXoV9IxC8PgcAROpv'
+        run: 'curl -H "Content-Type: application/json" -d "{\"embeds\": [$MSG]}" -X POST https://discord.com/api/webhooks/$WEBHOOK_ID/$WEBHOOK_TOKEN'
